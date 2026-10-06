@@ -6,6 +6,7 @@ import PublicRoute from "@/routes/PublicRoute";
 import Login from "@/pages/auth/Login";
 import Signup from "@/pages/auth/Signup";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
+import ResetPassword from "@/pages/auth/ResetPassword";
 
 import TodoList from "@/pages/dashboard/TodoList";
 import AllTasks from "@/pages/tasks/AllTasks";
@@ -27,6 +28,7 @@ export const appRoutes = (
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
     </Route>
 
     <Route element={<ProtectedRoute />}>

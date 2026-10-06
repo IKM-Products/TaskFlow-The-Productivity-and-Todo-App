@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { CalendarDays, Clock3, Edit, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import type { Todo } from "@/types/todo";
 
@@ -31,6 +32,20 @@ export default function TodoCard({
       : todo.priority === "medium"
       ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
       : "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
+
+  const handleDelete = () => {
+    onDelete(todo.id);
+    toast.success(`"${todo.title}" deleted`, {
+      description: "The task has been removed.",
+      action: {
+        label: "Undo",
+        onClick: () => {
+          // Trigger your restoration logic here if supported
+          toast.info("Action canceled");
+        },
+      },
+    });
+  };
 
   return (
     <Card className="group overflow-hidden rounded-2rem border border-purple-500/40 bg-slate-900/60 text-white shadow-xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/60 hover:shadow-cyan-950/30">
@@ -86,16 +101,16 @@ export default function TodoCard({
                   </Badge>
                 )}
                 {showStatus && (
-                <Badge
-                  variant="outline"
-                  className={`rounded-full px-4 py-1.5 text-sm ${
-                    todo.completed
-                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-                      : "border-slate-500/40 bg-slate-500/10 text-slate-300"
-                  }`}
-                >
-                  {todo.completed ? "Completed" : "Active"}
-                </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`rounded-full px-4 py-1.5 text-sm ${
+                      todo.completed
+                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                        : "border-slate-500/40 bg-slate-500/10 text-slate-300"
+                    }`}
+                  >
+                    {todo.completed ? "Completed" : "Active"}
+                  </Badge>
                 )}
               </div>
             </div>
@@ -118,7 +133,7 @@ export default function TodoCard({
             <Button
               size="icon"
               variant="outline"
-              onClick={() => onDelete(todo.id)}
+              onClick={handleDelete}
               className="h-12 w-12 rounded-full border-pink-500/30 bg-pink-500/10 text-pink-300 hover:bg-pink-500/20"
             >
               <Trash2 className="h-5 w-5" />

@@ -51,32 +51,39 @@ export default function ResetPassword() {
       return;
     }
 
-    const resetTokens: ResetTokenEntry[] = JSON.parse(
-      localStorage.getItem(RESET_TOKENS_KEY) || "[]"
-    );
+    try {
+      const resetTokens: ResetTokenEntry[] = JSON.parse(
+        localStorage.getItem(RESET_TOKENS_KEY) || "[]"
+      );
 
-    const resetEntry = resetTokens.find((t) => t.token === token);
+      const resetEntry = resetTokens.find((t) => t.token === token);
 
-    if (!resetEntry || resetEntry.expiresAt < Date.now()) {
-      toast.error("Invalid or expired password reset token.");
-      return;
+      if (!resetEntry || resetEntry.expiresAt < Date.now()) {
+        toast.error("Invalid or expired password reset token.");
+        return;
+      }
+
+      const users: UserEntry[] = JSON.parse(
+        localStorage.getItem(USERS_KEY) || "[]"
+      );
+
+      const updatedUsers = users.map((u) =>
+        u.email.toLowerCase() === resetEntry.email.toLowerCase()
+          ? { ...u, password: data.password }
+          : u
+      );
+
+      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
+      localStorage.setItem(
+        RESET_TOKENS_KEY,
+        JSON.stringify(resetTokens.filter((t) => t.token !== token))
+      );
+
+      toast.success("Password updated successfully! Please login.");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error("Failed to reset password. Please try again.");
     }
-
-    const users: UserEntry[] = JSON.parse(
-      localStorage.getItem(USERS_KEY) || "[]"
-    );
-    const updatedUsers = users.map((u) =>
-      u.email === resetEntry.email ? { ...u, password: data.password } : u
-    );
-
-    localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
-    localStorage.setItem(
-      RESET_TOKENS_KEY,
-      JSON.stringify(resetTokens.filter((t) => t.token !== token))
-    );
-
-    toast.success("Password updated successfully! Please login.");
-    navigate("/login", { replace: true });
   };
 
   return (

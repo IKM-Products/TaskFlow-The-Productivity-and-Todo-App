@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
+import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Mail, User, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 import AuthLayout from "@/components/AuthLayout";
 import {
@@ -15,11 +16,20 @@ import { Input } from "@/components/ui/input";
 
 const USERS_KEY = "taskflow_users";
 
+interface UserRecord {
+  id: string;
+  name: string;
+  email: string;
+  password?: string;
+  joinedAt: string;
+  avatar: string;
+}
+
 export default function Signup() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -29,33 +39,39 @@ export default function Signup() {
   });
 
   const onSubmit = (data: SignupFormData) => {
-    const users = JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+    try {
+      const users: UserRecord[] = JSON.parse(
+        localStorage.getItem(USERS_KEY) || "[]"
+      );
 
-    const userExists = users.some(
-      (user: any) => user.email === data.email
-    );
+      const userExists = users.some(
+        (user) => user.email.toLowerCase() === data.email.toLowerCase()
+      );
 
-    if (userExists) {
-      alert("Account already exists with this email.");
-      return;
+      if (userExists) {
+        toast.error("Account already exists with this email.");
+        return;
+      }
+
+      const newUser: UserRecord = {
+        id: crypto.randomUUID(),
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        joinedAt: new Date().toISOString(),
+        avatar: "",
+      };
+
+      localStorage.setItem(
+        USERS_KEY,
+        JSON.stringify([...users, newUser])
+      );
+
+      toast.success("Account created successfully!");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Failed to create account. Please try again.");
     }
-
-    const newUser = {
-      id: crypto.randomUUID(),
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      joinedAt: new Date().toISOString(),
-      avatar: "",
-    };
-
-    localStorage.setItem(
-      USERS_KEY,
-      JSON.stringify([...users, newUser])
-    );
-
-    alert("Account created successfully.");
-    navigate("/login");
   };
 
   return (
@@ -122,6 +138,18 @@ export default function Signup() {
   );
 }
 
+interface AuthInputProps {
+  icon: ReactNode;
+  label: string;
+  placeholder?: string;
+  type?: string;
+  register: UseFormRegisterReturn;
+  error?: string;
+  isPassword?: boolean;
+  showPassword?: boolean;
+  onTogglePassword?: () => void;
+}
+
 function AuthInput({
   icon,
   label,
@@ -132,7 +160,7 @@ function AuthInput({
   isPassword = false,
   showPassword = false,
   onTogglePassword,
-}: any) {
+}: AuthInputProps) {
   return (
     <div>
       <label className="mb-2 block text-sm font-semibold text-slate-300">

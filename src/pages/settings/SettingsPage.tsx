@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Bell, Settings2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import Navbar from "@/components/navbar";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ export default function SettingsPage() {
 
   const toggleNotifications = async () => {
     if (!("Notification" in window)) {
-      alert("This browser does not support notifications.");
+      toast.error("This browser does not support notifications.");
       return;
     }
 
@@ -38,25 +39,28 @@ export default function SettingsPage() {
       const permission = await Notification.requestPermission();
 
       if (permission !== "granted") {
-        alert("Notification permission denied.");
+        toast.error("Notification permission denied.");
         return;
       }
 
       localStorage.setItem(NOTIFICATION_KEY, "true");
       setNotifications(true);
-      alert("Notifications enabled.");
+      toast.success("Notifications enabled.");
       return;
     }
 
     localStorage.setItem(NOTIFICATION_KEY, "false");
     setNotifications(false);
-    alert("Notifications disabled.");
+    toast.info("Notifications disabled.");
   };
 
   const clearTasks = () => {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem("notified_todos");
-    window.location.reload();
+    toast.success("All tasks cleared successfully.");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   };
 
   return (

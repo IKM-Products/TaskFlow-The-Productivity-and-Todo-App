@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 import AuthLayout from "@/components/AuthLayout";
 import {
@@ -15,6 +16,17 @@ import { Input } from "@/components/ui/input";
 
 const USERS_KEY = "taskflow_users";
 const RESET_TOKENS_KEY = "taskflow_reset_tokens";
+
+interface UserRecord {
+  email: string;
+  [key: string]: any;
+}
+
+interface ResetTokenRecord {
+  email: string;
+  token: string;
+  expiresAt: number;
+}
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -31,32 +43,43 @@ export default function ForgotPassword() {
   const onSubmit = (data: ForgotPasswordFormData) => {
     setIsSubmitting(true);
 
-    const users = JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+    try {
+      const users: UserRecord[] = JSON.parse(
+        localStorage.getItem(USERS_KEY) || "[]"
+      );
 
-    const user = users.find((item: any) => item.email === data.email);
+      const user = users.find(
+        (item) => item.email.toLowerCase() === data.email.toLowerCase()
+      );
 
-    if (!user) {
-      alert("No account found with this email address.");
+      if (!user) {
+        toast.error("No account found with this email address.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const token = crypto.randomUUID();
+      const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour expiration
+
+      const resetTokens: ResetTokenRecord[] = JSON.parse(
+        localStorage.getItem(RESET_TOKENS_KEY) || "[]"
+      );
+
+      const updatedTokens = [
+        ...resetTokens.filter(
+          (item) => item.email.toLowerCase() !== data.email.toLowerCase()
+        ),
+        { email: data.email, token, expiresAt },
+      ];
+
+      localStorage.setItem(RESET_TOKENS_KEY, JSON.stringify(updatedTokens));
+
+      toast.success("Password reset link generated!");
+      navigate(`/reset-password?token=${token}`, { replace: true });
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
       setIsSubmitting(false);
-      return;
     }
-
-    const token = crypto.randomUUID();
-    const expiresAt = Date.now() + 60 * 60 * 1000; // 1 hour expiration
-
-    const resetTokens = JSON.parse(
-      localStorage.getItem(RESET_TOKENS_KEY) || "[]"
-    );
-
-    const updatedTokens = [
-      ...resetTokens.filter((item: any) => item.email !== data.email),
-      { email: data.email, token, expiresAt },
-    ];
-
-    localStorage.setItem(RESET_TOKENS_KEY, JSON.stringify(updatedTokens));
-
-    // Redirect to reset password page using react-router navigation
-    navigate(`/reset-password?token=${token}`, { replace: true });
   };
 
   return (

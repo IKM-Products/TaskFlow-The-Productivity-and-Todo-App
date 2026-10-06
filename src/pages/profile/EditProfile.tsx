@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import Navbar from "@/components/navbar";
 
 import { ArrowLeft, Mail, Save, Upload, User } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,7 +44,7 @@ export default function EditProfile() {
 
   const saveProfile = () => {
     if (!name.trim() || !email.trim()) {
-      alert("Name and email are required.");
+      toast.error("Name and email are required.");
       return;
     }
 
@@ -58,7 +59,7 @@ export default function EditProfile() {
     );
 
     if (emailTaken) {
-      alert("This email is already used by another account.");
+      toast.error("This email is already used by another account.");
       return;
     }
 
@@ -76,7 +77,7 @@ export default function EditProfile() {
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
     localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
 
-    alert("Profile updated successfully.");
+    toast.success("Profile updated successfully.");
     navigate("/profile");
   };
 

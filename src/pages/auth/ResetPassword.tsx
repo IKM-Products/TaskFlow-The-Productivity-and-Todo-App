@@ -3,26 +3,31 @@ import { useNavigate, useSearchParams, Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Lock } from "lucide-react";
-import { z } from "zod";
+import { toast } from "sonner";
 
 import AuthLayout from "@/components/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
+import {
+  resetPasswordSchema,
+  type ResetPasswordFormData,
+} from "@/schemas/resetPasswordSchema";
+
 const USERS_KEY = "taskflow_users";
 const RESET_TOKENS_KEY = "taskflow_reset_tokens";
 
-const resetPasswordSchema = z
-  .object({
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+interface ResetTokenEntry {
+  email: string;
+  token: string;
+  expiresAt: number;
+}
 
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+interface UserEntry {
+  email: string;
+  password: string;
+  [key: string]: unknown;
+}
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -42,33 +47,35 @@ export default function ResetPassword() {
 
   const onSubmit = (data: ResetPasswordFormData) => {
     if (!token) {
-      alert("Invalid or missing reset token.");
+      toast.error("Invalid or missing reset token.");
       return;
     }
 
-    const resetTokens = JSON.parse(
+    const resetTokens: ResetTokenEntry[] = JSON.parse(
       localStorage.getItem(RESET_TOKENS_KEY) || "[]"
     );
 
-    const resetEntry = resetTokens.find((t: any) => t.token === token);
+    const resetEntry = resetTokens.find((t) => t.token === token);
 
     if (!resetEntry || resetEntry.expiresAt < Date.now()) {
-      alert("Invalid or expired password reset token.");
+      toast.error("Invalid or expired password reset token.");
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
-    const updatedUsers = users.map((u: any) =>
+    const users: UserEntry[] = JSON.parse(
+      localStorage.getItem(USERS_KEY) || "[]"
+    );
+    const updatedUsers = users.map((u) =>
       u.email === resetEntry.email ? { ...u, password: data.password } : u
     );
 
     localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers));
     localStorage.setItem(
       RESET_TOKENS_KEY,
-      JSON.stringify(resetTokens.filter((t: any) => t.token !== token))
+      JSON.stringify(resetTokens.filter((t) => t.token !== token))
     );
 
-    alert("Password updated successfully! Please login.");
+    toast.success("Password updated successfully! Please login.");
     navigate("/login", { replace: true });
   };
 
@@ -95,11 +102,17 @@ export default function ResetPassword() {
               onClick={() => setShowPassword((prev) => !prev)}
               className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-200"
             >
-              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
             </button>
           </div>
           {errors.password && (
-            <p className="mt-2 text-sm text-pink-300">{errors.password.message}</p>
+            <p className="mt-2 text-sm text-pink-300">
+              {errors.password.message}
+            </p>
           )}
         </div>
 
@@ -120,11 +133,17 @@ export default function ResetPassword() {
               onClick={() => setShowConfirmPassword((prev) => !prev)}
               className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-200"
             >
-              {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              {showConfirmPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="mt-2 text-sm text-pink-300">{errors.confirmPassword.message}</p>
+            <p className="mt-2 text-sm text-pink-300">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
 
@@ -136,7 +155,10 @@ export default function ResetPassword() {
         </Button>
 
         <p className="text-center text-sm text-slate-400">
-          <Link to="/login" className="font-semibold text-cyan-300 transition hover:text-cyan-200">
+          <Link
+            to="/login"
+            className="font-semibold text-cyan-300 transition hover:text-cyan-200"
+          >
             Back to login
           </Link>
         </p>

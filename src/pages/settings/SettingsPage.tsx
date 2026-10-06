@@ -76,7 +76,7 @@ export default function SettingsPage() {
 
               <h1 className="text-5xl font-black">
                 Customize{" "}
-                <span className="bg-gradient-to-r from-purple-400 to-cyan-300 bg-clip-text text-transparent">
+                <span className="bg-linear-to-r from-purple-400 to-cyan-300 bg-clip-text text-transparent">
                   TaskFlow
                 </span>
               </h1>
@@ -88,7 +88,7 @@ export default function SettingsPage() {
           </section>
 
           <div className="space-y-6">
-            <div className="rounded-[2rem] border border-cyan-500/30 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl">
+            <div className="rounded-4xl border border-cyan-500/30 bg-slate-900/60 p-6 shadow-xl backdrop-blur-xl">
               <div className="flex items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-500/10">
@@ -107,7 +107,7 @@ export default function SettingsPage() {
                   onClick={toggleNotifications}
                   className={`relative h-8 w-16 rounded-full transition-all duration-300 ${
                     notifications
-                      ? "bg-gradient-to-r from-purple-600 to-cyan-400"
+                      ? "bg-linear-to-r from-purple-600 to-cyan-400"
                       : "bg-gray-500"
                   }`}
                 >
@@ -126,7 +126,7 @@ export default function SettingsPage() {
               </p>
             </div>
 
-            <div className="rounded-[2rem] border border-red-500/30 bg-red-500/10 p-6 shadow-xl backdrop-blur-xl">
+            <div className="rounded-4xl border border-red-500/30 bg-red-500/10 p-6 shadow-xl backdrop-blur-xl">
               <div className="flex items-center gap-4">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10">
                   <Trash2 className="text-red-300" />
@@ -152,8 +152,8 @@ export default function SettingsPage() {
                   </Button>
                 </AlertDialogTrigger>
 
-                <AlertDialogContent className="max-w-md overflow-hidden rounded-[2rem] border border-cyan-500/30 bg-[#07111f] p-0 text-white shadow-2xl shadow-cyan-950/50">
-                  <div className="rounded-[2rem] bg-[radial-gradient(circle_at_top_right,#06b6d433,transparent_35%),radial-gradient(circle_at_bottom_left,#9333ea33,transparent_35%)] p-7">
+                <AlertDialogContent className="max-w-md overflow-hidden rounded-4xl border border-cyan-500/30 bg-[#07111f] p-0 text-white shadow-2xl shadow-cyan-950/50">
+                  <div className="rounded-4xl bg-[radial-gradient(circle_at_top_right,#06b6d433,transparent_35%),radial-gradient(circle_at_bottom_left,#9333ea33,transparent_35%)] p-7">
                     <AlertDialogHeader>
                       <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-red-300">
                         <Trash2 className="h-7 w-7" />
@@ -170,13 +170,13 @@ export default function SettingsPage() {
                     </AlertDialogHeader>
 
                     <AlertDialogFooter className="mt-8 flex w-full flex-row justify-end gap-3 border-0 bg-transparent p-0">
-                      <AlertDialogCancel className="m-0 h-11 min-w-[110px] rounded-2xl border border-slate-600 bg-slate-800 px-6 font-semibold text-white hover:bg-slate-700 hover:text-white">
+                      <AlertDialogCancel className="m-0 h-11 min-w-27.5 rounded-2xl border border-slate-600 bg-slate-800 px-6 font-semibold text-white hover:bg-slate-700 hover:text-white">
                         Cancel
                       </AlertDialogCancel>
 
                       <AlertDialogAction
                         onClick={clearTasks}
-                        className="m-0 h-11 min-w-[110px] rounded-2xl bg-gradient-to-r from-red-600 to-pink-600 px-6 font-semibold text-white hover:from-red-700 hover:to-pink-700"
+                        className="m-0 h-11 min-w-27.5 rounded-2xl bg-linear-to-r from-red-600 to-pink-600 px-6 font-semibold text-white hover:from-red-700 hover:to-pink-700"
                       >
                         Delete
                       </AlertDialogAction>

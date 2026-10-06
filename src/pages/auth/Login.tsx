@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form"; 
 import { zodResolver } from "@hookform/resolvers/zod"; 
 import { Eye, EyeOff, Lock, Mail } from "lucide-react"; 
+import { toast } from "sonner";
  
 import AuthLayout from "@/components/AuthLayout"; 
 import { loginSchema, type LoginFormData } from "@/schemas/loginSchema"; 
@@ -56,7 +57,7 @@ export default function Login() {
     ); 
  
     if (!user) { 
-      alert("Invalid email or password."); 
+      toast.error("Invalid email or password."); 
       return; 
     } 
  
@@ -69,6 +70,8 @@ export default function Login() {
         userId: user.id, 
       }) 
     ); 
+
+    toast.success("Login successful! Welcome back.");
  
     navigate("/dashboard", { replace: true }); 
   }; 

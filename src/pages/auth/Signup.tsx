@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail, User, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, User, Lock } from "lucide-react";
 
 import AuthLayout from "@/components/AuthLayout";
 import {
@@ -16,7 +17,9 @@ const USERS_KEY = "taskflow_users";
 
 export default function Signup() {
   const navigate = useNavigate();
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const {
     register,
     handleSubmit,
@@ -77,19 +80,25 @@ export default function Signup() {
         <AuthInput
           icon={<Lock />}
           label="Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Enter password"
           register={register("password")}
           error={errors.password?.message}
+          isPassword
+          showPassword={showPassword}
+          onTogglePassword={() => setShowPassword((prev) => !prev)}
         />
 
         <AuthInput
           icon={<Lock />}
           label="Confirm Password"
-          type="password"
+          type={showConfirmPassword ? "text" : "password"}
           placeholder="Confirm password"
           register={register("confirmPassword")}
           error={errors.confirmPassword?.message}
+          isPassword
+          showPassword={showConfirmPassword}
+          onTogglePassword={() => setShowConfirmPassword((prev) => !prev)}
         />
 
         <Button
@@ -120,6 +129,9 @@ function AuthInput({
   type = "text",
   register,
   error,
+  isPassword = false,
+  showPassword = false,
+  onTogglePassword,
 }: any) {
   return (
     <div>
@@ -136,8 +148,24 @@ function AuthInput({
           type={type}
           placeholder={placeholder}
           {...register}
-          className="h-12 rounded-2xl border-slate-600 bg-slate-950/70 pl-12 text-white"
+          className={`h-12 rounded-2xl border-slate-600 bg-slate-950/70 pl-12 text-white ${
+            isPassword ? "pr-12" : ""
+          }`}
         />
+
+        {isPassword && (
+          <button
+            type="button"
+            onClick={onTogglePassword}
+            className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-200"
+          >
+            {showPassword ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
+        )}
       </div>
 
       {error && <p className="mt-2 text-sm text-pink-300">{error}</p>}
